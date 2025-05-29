@@ -2,6 +2,13 @@
 
 This project uses an LSTM (Long Short-Term Memory) neural network to predict future stock prices based on historical stock data. It's built using Python and TensorFlow/Keras.
 
+# Run this project through DSS_Project.ipynb directly
+
+
+
+
+or this method, ....
+
 ## 📁 Project Structure
 
 LSTM-Stock-Prediction/
