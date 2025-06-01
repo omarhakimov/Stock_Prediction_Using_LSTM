@@ -1,0 +1,193 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, "3.10", 3.11]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov flake8 black isort
+    
+    - name: Create test directories
+      run: |
+        mkdir -p data/{raw,processed,models}
+        mkdir -p outputs/{predictions,classifications,plots}
+        mkdir -p tests/data
+    
+    - name: Generate test data
+      run: |
+        python -c "
+        import pandas as pd
+        import numpy as np
+        import os
+        
+        np.random.seed(42)
+        dates = pd.date_range('2020-01-01', '2021-12-31', freq='D')
+        prices = 100 + np.cumsum(np.random.randn(len(dates)) * 0.5)
+        
+        test_data = pd.DataFrame({
+            'Date': dates,
+            'Close': prices,
+            'Index': 'TEST'
+        })
+        
+        test_data.to_csv('data/raw/test_stock_data.csv', index=False)
+        print('Test data created')
+        "
+    
+    - name: Lint with flake8
+      run: |
+        flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Check code formatting with black
+      run: |
+        black --check src
+    
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only src
+    
+    - name: Test imports
+      run: |
+        python -c "
+        import sys
+        sys.path.append('src')
+        from src.data_processor import StockDataProcessor
+        from src.model import LSTMModel
+        from src.predictor import StockPredictor, RiskClassifier
+        from src.visualizer import StockVisualizer
+        from src.utils import create_output_directories
+        print('All imports successful')
+        "
+    
+    - name: Test basic functionality
+      run: |
+        python -c "
+        import sys
+        sys.path.append('src')
+        import os
+        import numpy as np
+        
+        from src.data_processor import StockDataProcessor
+        from src.model import LSTMModel
+        
+        # Test data loading
+        processor = StockDataProcessor(window_size=3)
+        df, scaler = processor.load_and_preprocess('data/raw/test_stock_data.csv', 'TEST')
+        
+        # Test windowing
+        dates, X, y = processor.df_to_windowed_df_simple(df)
+        
+        # Test data splits
+        data_splits = processor.split_data(dates, X, y)
+        
+        print(f'Data loaded: {df.shape}')
+        print(f'Windowed data: X={X.shape}, y={y.shape}')
+        print(f'Train samples: {data_splits[\"X_train\"].shape[0]}')
+        print('Basic functionality test passed')
+        "
+    
+    - name: Test model creation (CPU only)
+      run: |
+        python -c "
+        import sys
+        sys.path.append('src')
+        import os
+        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Force CPU
+        
+        from src.model import LSTMModel
+        
+        # Test model creation
+        model = LSTMModel(window_size=3, lstm_units=8, dense_units=4)
+        keras_model = model.build_model()
+        
+        print('Model architecture:')
+        keras_model.summary()
+        print('Model creation test passed')
+        "
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    
+    - name: Install safety
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety
+    
+    - name: Check for security vulnerabilities
+      run: |
+        safety check --file requirements.txt --continue-on-error
+
+  documentation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check README
+      run: |
+        if [ ! -f README.md ]; then
+          echo "README.md is missing"
+          exit 1
+        fi
+        
+        if [ ! -s README.md ]; then
+          echo "README.md is empty"
+          exit 1
+        fi
+        
+        echo "README.md exists and has content"
+    
+    - name: Check license
+      run: |
+        if [ ! -f LICENSE ]; then
+          echo "LICENSE file is missing"
+          exit 1
+        fi
+        
+        echo "LICENSE file exists"
+    
+    - name: Check contributing guidelines
+      run: |
+        if [ ! -f CONTRIBUTING.md ]; then
+          echo "CONTRIBUTING.md is missing"
+          exit 1
+        fi
+        
+        echo "CONTRIBUTING.md exists"

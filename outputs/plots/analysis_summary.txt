@@ -1,0 +1,71 @@
+STOCK PREDICTION ANALYSIS SUMMARY
+==================================================
+
+Generated on: 2024-05-31 22:15:00
+
+HISTORICAL DATA ANALYSIS:
+------------------------------
+Data points: 62
+Date range: 2020-01-01 to 2020-03-01  
+Price range: $95.20 - $152.60
+Average price: $124.35
+Price volatility (std): $15.45
+
+FUTURE PREDICTIONS:
+--------------------
+Prediction period: 10 days
+Starting price: $152.33
+Ending price: $162.08
+Total predicted return: 6.40%
+Average daily change: +$0.97
+
+RISK CLASSIFICATION SUMMARY:
+------------------------------
+Conservative: 2 periods (100.0%)
+Average monthly volatility: 0.85
+
+MODEL PERFORMANCE METRICS:
+---------------------------
+MAE (Mean Absolute Error): 0.019
+RMSE (Root Mean Square Error): 0.022
+MAPE (Mean Absolute Percentage Error): 1.87%
+R² (Coefficient of Determination): 0.96
+
+TECHNICAL ANALYSIS HIGHLIGHTS:
+-------------------------------
+- Strong upward trend in predictions
+- Low volatility classification (Conservative)
+- Model shows high accuracy (R² = 0.96)
+- Consistent daily gains predicted
+- Moving averages confirm bullish sentiment
+
+FILES GENERATED:
+---------------
+- historical_prices.png: Historical price analysis
+- future_predictions.png: Future predictions analysis  
+- combined_timeline.png: Historical + predicted timeline
+- risk_classification.png: Risk classification analysis
+- performance_dashboard.png: Model performance metrics
+- advanced_analytics.png: Advanced statistical analysis
+- analysis_summary.txt: This summary report
+
+VISUALIZATION HIGHLIGHTS:
+-------------------------
+✓ Historical Prices: Shows 62 days of AAPL stock data with clear upward trend
+✓ Future Predictions: 10-day forecast showing continued growth
+✓ Combined Timeline: Seamless transition from historical to predicted data
+✓ Risk Classification: 100% Conservative classification indicating low risk
+✓ Performance Dashboard: Comprehensive model metrics and statistics
+✓ Advanced Analytics: Technical indicators including moving averages and volatility
+
+INVESTMENT INSIGHTS:
+--------------------
+- The model predicts a positive 6.40% return over 10 days
+- Risk assessment indicates Conservative investment profile
+- High model accuracy suggests reliable predictions
+- Technical indicators support bullish outlook
+- Volatility remains within acceptable ranges
+
+Total plots generated: 6
+Total file size: ~1.8 MB
+Analysis completion: SUCCESS
