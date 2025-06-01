@@ -1,5 +1,3 @@
-g# Stock Price Prediction with LSTM
-
 A comprehensive machine learning project for predicting stock prices using Long Short-Term Memory (LSTM) neural networks. This project provides both individual stock analysis and batch processing capabilities, along with risk classification and visualization tools.
 
 ## 🎯 Features
